@@ -146,14 +146,7 @@ func (p parser) parseMessage(until Token) (Message, error) {
 			p.Next() // skip optional separator
 		}
 	}
-	if err := p.Err(); err == io.EOF {
-		if until != None {
-			return nil, p.fail("wanted %v, but found end of input", until)
-		}
-	} else if err != nil {
-		return nil, err
-	}
-	return msg, nil
+	panic("unreachable")
 }
 
 func (p parser) parseMessageField(name string, until Token) (*Field, error) {
