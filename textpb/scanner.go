@@ -70,7 +70,7 @@ var tokenString = map[Token]string{
 	Semi:     `";"`,
 }
 
-var isNumber = regexp.MustCompile(`^-?(\d+(\.\d*)?|\.\d+)$`)
+var isNumber = regexp.MustCompile(`^-?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?$`)
 var isName = regexp.MustCompile(`(?i)^[_a-z][_a-z0-9]*$`)
 
 func isSpace(c rune) bool { return strings.IndexRune(whiteSpace, c) >= 0 }
