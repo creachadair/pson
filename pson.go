@@ -57,20 +57,29 @@ func main() {
 			log.Fatalf("Parsing %q failed: %v", path, err)
 		}
 		in.Close()
-		var msgs []textpb.Message
+
+		// If requested, split the message into single-valued messages;
+		// otherwise combine the (single) top-level message.
 		if *doSplit {
-			msgs = msg.Split()
+			err = writeMessages(os.Stdout, msg.Split()...)
 		} else {
-			msgs = []textpb.Message{msg.Combine()}
+			err = writeMessages(os.Stdout, msg.Combine())
 		}
-		for _, out := range msgs {
-			bits, err := marshal(out)
-			if err != nil {
-				log.Fatalf("Marshaling %q to JSON failed: %v", path, err)
-			}
-			fmt.Println(string(bits))
+		if err != nil {
+			log.Fatalf("Error writing JSON output: %v", err)
 		}
 	}
+}
+
+func writeMessages(w io.Writer, msgs ...textpb.Message) error {
+	enc := json.NewEncoder(w)
+	enc.SetIndent(*linePrefix, *indent)
+	for _, out := range msgs {
+		if err := enc.Encode(out); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func mustOpen(path string) (string, io.ReadCloser) {
