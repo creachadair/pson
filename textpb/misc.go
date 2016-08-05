@@ -1,8 +1,29 @@
 package textpb
 
+// This file adds split/combine and other utility code.
+
 import "sort"
 
-// This file adds split/combine and other utility code.
+// Camel recursively renames each field of the given message in-place,
+// converting snake-case names to camel-case.
+func (m Message) ToCamel() {
+	for _, f := range m {
+		f.toCamel()
+	}
+}
+
+func (f *Field) toCamel() {
+	f.Name = SnakeToCamel(f.Name)
+	for _, v := range f.Values {
+		v.toCamel()
+	}
+}
+
+func (v *Value) toCamel() {
+	if v.Msg != nil {
+		v.Msg.ToCamel()
+	}
+}
 
 // Combine returns a copy of m in which each field name occurs exactly once,
 // with all the values assigned to that field name.  This process is applied
