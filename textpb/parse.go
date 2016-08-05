@@ -36,6 +36,48 @@ func (m Message) Combine() Message {
 	return out
 }
 
+// Split recursively partitions m into multiple messages with the property that
+// each field of each resulting message has at most one value.
+func (m Message) Split() []Message { return m.Combine().split() }
+
+func (m Message) split() []Message {
+	var all [][]*Field // the results of partitioning all the fields
+	for _, f := range m {
+		if fs := f.split(); len(fs) > 0 {
+			all = append(all, fs)
+		}
+	}
+
+	// Accumulates the result messages.
+	var result []Message
+
+	// A slice of indexes into the field sets returned by expansion.
+	// Each idx[i] is in the range [0,len(all[i])) and denotes the
+	// position of the next field value to be consumed.
+	idx := make([]int, len(all))
+
+	done := false
+	for !done {
+		// Increment the index vector.
+		for i, x := range idx {
+			idx[i] = (x + 1) % len(all[i])
+			if idx[i] != 0 {
+				break
+			}
+			done = i+1 == len(idx)
+		}
+
+		// Copy the index values into the result.
+		next := make(Message, len(idx))
+		for i, x := range idx {
+			next[i] = all[i][x]
+		}
+		result = append(result, next)
+	}
+
+	return result
+}
+
 func (m Message) Len() int           { return len(m) }
 func (m Message) Swap(i, j int)      { m[i], m[j] = m[j], m[i] }
 func (m Message) Less(i, j int) bool { return m[i].Name < m[j].Name }
@@ -49,8 +91,24 @@ type Field struct {
 
 func (f *Field) String() string { return fmt.Sprintf("#<field name=%q values=%+v>", f.Name, f.Values) }
 
-// A Value represents the value of a field. If Msg is non-nil, the other
-// fields will be ignored.
+func (f *Field) split() []*Field {
+	if len(f.Values) == 0 {
+		return nil
+	}
+	var fs []*Field
+	for _, v := range f.Values {
+		for _, vs := range v.split() {
+			fs = append(fs, &Field{
+				Name:   f.Name,
+				Values: []*Value{vs},
+			})
+		}
+	}
+	return fs
+}
+
+// A Value represents the value of a field. If Msg is non-nil, the other fields
+// will be ignored.
 type Value struct {
 	Msg  Message
 	Type Token
@@ -62,6 +120,17 @@ func (v *Value) combine() *Value {
 		return v
 	}
 	return &Value{Msg: v.Msg.Combine()}
+}
+
+func (v *Value) split() []*Value {
+	if v.Msg == nil {
+		return []*Value{v}
+	}
+	var vs []*Value
+	for _, msg := range v.Msg.split() {
+		vs = append(vs, &Value{Msg: msg})
+	}
+	return vs
 }
 
 func (v *Value) String() string {

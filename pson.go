@@ -16,6 +16,7 @@ import (
 var (
 	linePrefix = flag.String("prefix", "", "Message prefix (enables indentation)")
 	indent     = flag.String("indent", "", "Indentation marker (enables indentation)")
+	doSplit    = flag.Bool("split", false, "Split into single-valued messages")
 )
 
 func init() {
@@ -56,11 +57,19 @@ func main() {
 			log.Fatalf("Parsing %q failed: %v", path, err)
 		}
 		in.Close()
-		bits, err := marshal(msg.Combine())
-		if err != nil {
-			log.Fatalf("Marshaling %q to JSON failed: %v", path, err)
+		var msgs []textpb.Message
+		if *doSplit {
+			msgs = msg.Split()
+		} else {
+			msgs = []textpb.Message{msg.Combine()}
 		}
-		fmt.Println(string(bits))
+		for _, out := range msgs {
+			bits, err := marshal(out)
+			if err != nil {
+				log.Fatalf("Marshaling %q to JSON failed: %v", path, err)
+			}
+			fmt.Println(string(bits))
+		}
 	}
 }
 
