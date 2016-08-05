@@ -14,15 +14,15 @@ import (
 //
 // Conventions:
 //
-// · A field with no values is represented by "null".
+// ∙ A field with no values is represented by "null".
 //
-// · A field with more than one value is encoded as a list.
+// ∙ A field with more than one value is encoded as a list.
 //
-// · Booleans are represented by "true" and "false".
+// ∙ Booleans are represented by "true" and "false".
 //
-// · Numbers are copied literally.
+// ∙ Numbers are copied literally.
 //
-// · Field names and enumerators are encoded as strings.
+// ∙ Field names and enumerators are encoded as strings.
 //
 // Note that we don't really know which fields are declared as repeated; we
 // assume a field is repeated if it has 0 or > 1 values.
