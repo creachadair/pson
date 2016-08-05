@@ -99,10 +99,3 @@ func mustOpen(path string) (string, io.ReadCloser) {
 	}
 	return path, f
 }
-
-func marshal(msg textpb.Message) ([]byte, error) {
-	if *linePrefix != "" || *indent != "" {
-		return json.MarshalIndent(msg, *linePrefix, *indent)
-	}
-	return json.Marshal(msg)
-}
