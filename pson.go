@@ -17,6 +17,7 @@ var (
 	linePrefix = flag.String("prefix", "", "Message prefix (enables indentation)")
 	indent     = flag.String("indent", "", "Indentation marker (enables indentation)")
 	doSplit    = flag.Bool("split", false, "Split into single-valued messages")
+	doCamel    = flag.Bool("camel", false, "Convert names to camel-case")
 )
 
 func init() {
@@ -75,6 +76,9 @@ func writeMessages(w io.Writer, msgs ...textpb.Message) error {
 	enc := json.NewEncoder(w)
 	enc.SetIndent(*linePrefix, *indent)
 	for _, out := range msgs {
+		if *doCamel {
+			out.ToCamel()
+		}
 		if err := enc.Encode(out); err != nil {
 			return err
 		}
