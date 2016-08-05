@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 // MarshalJSON implements the json.Marshaler interface.  Conversion to JSON is
@@ -71,4 +72,20 @@ func (v *Value) marshalJSON(buf *bytes.Buffer) error {
 		return fmt.Errorf("invalid value type: %v", v.Type)
 	}
 	return nil
+}
+
+// SnakeToCamel converts a name in "snake_case" to "camelCase".
+func SnakeToCamel(name string) string {
+	var words []string
+	for _, word := range strings.Split(name, "_") {
+		switch {
+		case word == "":
+			continue
+		case len(words) == 0:
+			words = append(words, strings.ToLower(word))
+		default:
+			words = append(words, strings.Title(strings.ToLower(word)))
+		}
+	}
+	return strings.Join(words, "")
 }
