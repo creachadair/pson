@@ -48,14 +48,18 @@ func (m Message) Combine() Message {
 	return out
 }
 
-// Split recursively partitions m into multiple messages with the property that
-// each field of each resulting message has at most one value.
-func (m Message) Split() []Message { return m.Combine().split() }
+// Split recursively partitions m into multiple messages with the property that each field
+// of each resulting message has at most one value.
+func (m Message) Split() []Message { return m.Combine().split(true) }
 
-func (m Message) split() []Message {
+// Split1 partitions m into multiple messages with the property that each field
+// of each resulting message has at most one value.
+func (m Message) Split1() []Message { return m.Combine().split(false) }
+
+func (m Message) split(recur bool) []Message {
 	var all [][]*Field // the results of partitioning all the fields
 	for _, f := range m {
-		if fs := f.split(); len(fs) > 0 {
+		if fs := f.split(recur); len(fs) > 0 {
 			all = append(all, fs)
 		}
 	}
@@ -90,13 +94,13 @@ func (m Message) split() []Message {
 	return result
 }
 
-func (f *Field) split() []*Field {
+func (f *Field) split(recur bool) []*Field {
 	if len(f.Values) == 0 {
 		return nil
 	}
 	var fs []*Field
 	for _, v := range f.Values {
-		for _, vs := range v.split() {
+		for _, vs := range v.split(recur) {
 			fs = append(fs, &Field{
 				Name:   f.Name,
 				Values: []*Value{vs},
@@ -113,12 +117,12 @@ func (v *Value) combine() *Value {
 	return &Value{Msg: v.Msg.Combine()}
 }
 
-func (v *Value) split() []*Value {
-	if v.Msg == nil {
+func (v *Value) split(recur bool) []*Value {
+	if v.Msg == nil || !recur {
 		return []*Value{v}
 	}
 	var vs []*Value
-	for _, msg := range v.Msg.split() {
+	for _, msg := range v.Msg.split(recur) {
 		vs = append(vs, &Value{Msg: msg})
 	}
 	return vs
