@@ -17,6 +17,7 @@ var (
 	linePrefix = flag.String("prefix", "", "Message prefix (enables indentation)")
 	indent     = flag.String("indent", "", "Indentation marker (enables indentation)")
 	doSplit    = flag.Bool("split", false, "Split into single-valued messages")
+	doRecur    = flag.Bool("rsplit", false, "Split recursively (implies -split)")
 	doCamel    = flag.Bool("camel", false, "Convert names to camel-case")
 )
 
@@ -61,8 +62,10 @@ func main() {
 
 		// If requested, split the message into single-valued messages;
 		// otherwise combine the (single) top-level message.
-		if *doSplit {
+		if *doRecur {
 			err = writeMessages(os.Stdout, msg.Split()...)
+		} else if *doSplit {
+			err = writeMessages(os.Stdout, msg.Split1()...)
 		} else {
 			err = writeMessages(os.Stdout, msg.Combine())
 		}
