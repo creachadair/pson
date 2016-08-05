@@ -79,7 +79,7 @@ func isDelim(c rune) bool { return strings.IndexRune(nameDelim, c) >= 0 }
 // NewScanner returns a scanner that consumes data from r.
 func NewScanner(r io.Reader) *Scanner { return &Scanner{r: bufio.NewReader(r)} }
 
-// A Scanner returns tokens from a text protobuf message.
+// A Scanner returns tokens from a text-format protobuf message.
 type Scanner struct {
 	r        *bufio.Reader
 	tok      Token // current token type

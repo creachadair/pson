@@ -16,8 +16,7 @@ func (m Message) Len() int           { return len(m) }
 func (m Message) Swap(i, j int)      { m[i], m[j] = m[j], m[i] }
 func (m Message) Less(i, j int) bool { return m[i].Name < m[j].Name }
 
-// A Field represents a named field. The value of a field may be a message or a
-// collection of values.
+// A Field represents a named field having zero or more values.
 type Field struct {
 	Name   string
 	Values []*Value
@@ -25,8 +24,8 @@ type Field struct {
 
 func (f *Field) String() string { return fmt.Sprintf("#<field name=%q values=%+v>", f.Name, f.Values) }
 
-// A Value represents the value of a field. If Msg is non-nil, the other fields
-// will be ignored.
+// A Value represents the value of a field, which may be a message or a
+// primitive token. If Msg is non-nil, the other fields will be ignored.
 type Value struct {
 	Msg  Message
 	Type Token
@@ -40,13 +39,13 @@ func (v *Value) String() string {
 	return fmt.Sprintf("#<value %v %q>", v.Type, v.Text)
 }
 
-// Int returns the value as an integer, if possible.
+// Int returns the value of v as an integer, if possible.
 func (v *Value) Int() (int, error) { return strconv.Atoi(v.Text) }
 
-// Number returns the value as a floating-point number, if possible.
+// Number returns the value of v as a floating-point number, if possible.
 func (v *Value) Number() (float64, error) { return strconv.ParseFloat(v.Text, 64) }
 
-// Bool returns the value as a Boolean, if possible.
+// Bool returns the value of v as a Boolean, if possible.
 func (v *Value) Bool() (bool, error) {
 	switch v.Text {
 	case "true":
