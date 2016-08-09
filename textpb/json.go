@@ -72,7 +72,7 @@ func (v *Value) marshalJSON(buf *bytes.Buffer) error {
 	case TypeName:
 		buf.WriteString(strconv.Quote("[" + v.Text + "]"))
 	case True, False, Number:
-		buf.WriteString(v.Text)
+		buf.WriteString(valueString(v))
 	default:
 		return fmt.Errorf("invalid value type: %v", v.Type)
 	}
@@ -93,4 +93,11 @@ func SnakeToCamel(name string) string {
 		}
 	}
 	return strings.Join(words, "")
+}
+
+func valueString(v *Value) string {
+	if v.Type == Number {
+		return strings.TrimSuffix(strings.ToLower(v.Text), "f")
+	}
+	return v.Text
 }
