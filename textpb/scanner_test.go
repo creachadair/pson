@@ -29,8 +29,8 @@ func TestScanner(t *testing.T) {
 		{`[grok.proto.Foo] { value: 27 weight: .2 }`, []Token{
 			TypeName, LeftC, Name, Colon, Number, Name, Colon, Number, RightC,
 		}},
-		{`1 2. .3 -.4 5e16 -6e+9 .70E-1 88.81`, []Token{
-			Number, Number, Number, Number, Number, Number, Number, Number,
+		{`1 2. .3 -.4 5e16 -6e+9 .70E-1 88.81 11f -.5e-2f`, []Token{
+			Number, Number, Number, Number, Number, Number, Number, Number, Number, Number,
 		}},
 		{`decorations < outline:true source_text:false > ticket: "bogus"`, []Token{
 			Name, LeftA, Name, Colon, True, Name, Colon, False, RightA, Name, Colon, String,
