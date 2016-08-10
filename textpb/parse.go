@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"strings"
 )
 
 // A Message represents a collection of named fields.
@@ -42,8 +43,13 @@ func (v *Value) String() string {
 // Int returns the value of v as an integer, if possible.
 func (v *Value) Int() (int, error) { return strconv.Atoi(v.Text) }
 
+// Fixed returns the value of v as a fixed-point number, if possible.
+func (v *Value) Fixed() (int64, error) { return strconv.ParseInt(v.Text, 0, 64) }
+
 // Number returns the value of v as a floating-point number, if possible.
-func (v *Value) Number() (float64, error) { return strconv.ParseFloat(v.Text, 64) }
+func (v *Value) Number() (float64, error) { return strconv.ParseFloat(noFixTag(v.Text), 64) }
+
+func noFixTag(s string) string { return strings.TrimSuffix(strings.ToLower(s), "f") }
 
 // Bool returns the value of v as a Boolean, if possible.
 func (v *Value) Bool() (bool, error) {

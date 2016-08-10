@@ -19,7 +19,7 @@ const (
 	TypeName       // extension or Any type name
 	Colon          // name:value separator
 	String         // quoted string
-	Number         // int or float
+	Number         // numeric literal
 	LeftA          // left angle bracket
 	RightA         // right angle bracket
 	LeftC          // left curly bracker
@@ -70,7 +70,8 @@ var tokenString = map[Token]string{
 	Semi:     `";"`,
 }
 
-var isNumber = regexp.MustCompile(`^-?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?[fF]?$`)
+var isFixed = regexp.MustCompile(`(?i)^-?0x[a-f0-9]+$`)
+var isFloat = regexp.MustCompile(`(?i)^-?(\d+(\.\d*)?|\.\d+)(e[-+]?\d+)?f?$`)
 var isName = regexp.MustCompile(`(?i)^[_a-z][_a-z0-9]*$`)
 
 func isSpace(c rune) bool { return strings.IndexRune(whiteSpace, c) >= 0 }
@@ -162,7 +163,7 @@ func (s *Scanner) nameLike(init rune) bool {
 		return s.ok(True)
 	} else if cur == "false" {
 		return s.ok(False)
-	} else if isNumber.MatchString(cur) {
+	} else if isFixed.MatchString(cur) || isFloat.MatchString(cur) {
 		return s.ok(Number)
 	} else if isName.MatchString(cur) {
 		return s.ok(Name)
