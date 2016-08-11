@@ -11,6 +11,7 @@ import (
 	"os"
 
 	"bitbucket.org/creachadair/pson/textpb"
+	"bitbucket.org/creachadair/pson/textpb/format"
 )
 
 var (
@@ -19,6 +20,7 @@ var (
 	doSplit    = flag.Bool("split", false, "Split into single-valued messages")
 	doRecur    = flag.Bool("rsplit", false, "Split recursively (implies -split)")
 	doCamel    = flag.Bool("camel", false, "Convert names to camel-case")
+	doProto    = flag.Bool("proto", false, "Render output as text-format protobuf")
 )
 
 func init() {
@@ -62,12 +64,16 @@ func main() {
 
 		// If requested, split the message into single-valued messages;
 		// otherwise combine the (single) top-level message.
+		write := writeMessages
+		if *doProto {
+			write = writeProtos
+		}
 		if *doRecur {
-			err = writeMessages(os.Stdout, msg.Split()...)
+			err = write(os.Stdout, msg.Split()...)
 		} else if *doSplit {
-			err = writeMessages(os.Stdout, msg.Split1()...)
+			err = write(os.Stdout, msg.Split1()...)
 		} else {
-			err = writeMessages(os.Stdout, msg.Combine())
+			err = write(os.Stdout, msg.Combine())
 		}
 		if err != nil {
 			log.Fatalf("Error writing JSON output: %v", err)
@@ -85,6 +91,20 @@ func writeMessages(w io.Writer, msgs ...textpb.Message) error {
 		if err := enc.Encode(out); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func writeProtos(w io.Writer, msgs ...textpb.Message) error {
+	cfg := format.Config{
+		Compact: *indent == "",
+		Indent:  *indent,
+	}
+	for _, out := range msgs {
+		if err := cfg.Text(w, out); err != nil {
+			return err
+		}
+		fmt.Fprintln(w)
 	}
 	return nil
 }
