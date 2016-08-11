@@ -53,7 +53,10 @@ func (c Config) textValue(w io.Writer, name string, value *textpb.Value, level i
 		return err
 	}
 	if value.Msg == nil {
-		return fp(w, ":", c.space(), tokenText(value))
+		if err := fp(w, ":", c.space(), tokenText(value)); err != nil {
+			return err
+		}
+		return c.next(w, sep)
 	}
 	if len(value.Msg) == 0 {
 		return fp(w, " ", c.left(), c.right())

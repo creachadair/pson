@@ -40,6 +40,8 @@ func TestTextFormatting(t *testing.T) {
 			ans(`a <*@b <>*>*a <>*c <>`, `a <b <>> a <> c <>`)},
 		{`a{b{c:1 c:2 c:3}d{e{f:0x3f}}}`,
 			ans(`a <*@b <*@@c: 1*@@c: 2*@@c: 3*@>*@d <*@@e <*@@@f: 0x3f*@@>*@>*>`, `a <b <c:1 c:2 c:3> d <e <f:0x3f>>>`)},
+		{`a:FOO a:BAR a:BAZ`,
+			ans(`a: FOO*a: BAR*a: BAZ`, `a:FOO a:BAR a:BAZ`)},
 	}
 	for _, test := range tests {
 		msg, err := textpb.ParseString(test.input)
@@ -49,7 +51,7 @@ func TestTextFormatting(t *testing.T) {
 		for i, cfg := range configs {
 			t.Logf("Config: %+v", cfg)
 			var buf bytes.Buffer
-			if err := cfg.Text(&buf, msg); err != nil {
+			if err := cfg.Text(&buf, msg.Combine()); err != nil {
 				t.Errorf("Text %#q: unexpected error: %v", test.input, err)
 				continue
 			}
