@@ -20,7 +20,8 @@ var (
 	doSplit    = flag.Bool("split", false, "Split into single-valued messages")
 	doRecur    = flag.Bool("rsplit", false, "Split recursively (implies -split)")
 	doCamel    = flag.Bool("camel", false, "Convert names to camel-case")
-	doProto    = flag.Bool("proto", false, "Render output as text-format protobuf")
+	doProto1   = flag.Bool("proto1", false, "Render output as text-format protobuf (old style)")
+	doProto2   = flag.Bool("proto2", false, "Render output as text-format protobuf (new style)")
 )
 
 func init() {
@@ -65,7 +66,7 @@ func main() {
 		// If requested, split the message into single-valued messages;
 		// otherwise combine the (single) top-level message.
 		write := writeMessages
-		if *doProto {
+		if *doProto1 || *doProto2 {
 			write = writeProtos
 		}
 		if *doRecur {
@@ -97,6 +98,7 @@ func writeMessages(w io.Writer, msgs ...textpb.Message) error {
 
 func writeProtos(w io.Writer, msgs ...textpb.Message) error {
 	cfg := format.Config{
+		Curly:   *doProto2,
 		Compact: *indent == "",
 		Indent:  *indent,
 	}
