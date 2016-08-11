@@ -40,7 +40,7 @@ func (m Message) Combine() Message {
 			of.Values = append(of.Values, v.combine())
 		}
 	}
-	var out Message
+	out := Message{}
 	for _, field := range names {
 		out = append(out, field)
 	}

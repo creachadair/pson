@@ -40,6 +40,7 @@ func TestParse(t *testing.T) {
 	}{
 		{"", "", ""},
 		{"a:1", "a", "1"},
+		{"a:<>", "a", ""},
 		{"a:true", "a", "true"},
 		{`a:"foo" b:false`, "b", "false"},
 		{`a < in: true >`, "a.in", "true"},
@@ -61,11 +62,12 @@ in: 'the cities'
 # or pity for leaving I feel`, "long_and_weary.has", "been"},
 	}
 	for _, test := range tests {
-		got, err := Parse(strings.NewReader(test.input))
+		got, err := ParseString(test.input)
 		if err != nil {
 			t.Errorf("Parse %q failed: %v", test.input, err)
 			continue
 		}
+		t.Logf("ParseString %q yielded %+v", test.input, got)
 		v, err := pathValue(got, test.path)
 		if err != nil {
 			t.Errorf("Lookup failed: %v", err)

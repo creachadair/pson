@@ -75,6 +75,9 @@ func Parse(r io.Reader) (Message, error) {
 	return p.parseMessage(None)
 }
 
+// ParseString applies Parse to the specified string.
+func ParseString(s string) (Message, error) { return Parse(strings.NewReader(s)) }
+
 type parser struct {
 	*Scanner
 }
@@ -84,7 +87,7 @@ func (p parser) fail(msg string, args ...interface{}) error {
 }
 
 func (p parser) parseMessage(until Token) (Message, error) {
-	var msg Message
+	msg := Message{} // not nil, as that is the signal for a primitive
 	for {
 		tok := p.Token()
 		if tok == until {
