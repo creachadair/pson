@@ -123,7 +123,6 @@ func (p parser) parseMessage(until Token) (Message, error) {
 			p.Next() // skip optional separator
 		}
 	}
-	panic("unreachable")
 }
 
 func (p parser) parseMessageField(name string, until Token) (*Field, error) {
