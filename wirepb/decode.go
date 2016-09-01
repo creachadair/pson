@@ -18,7 +18,9 @@ type Decoder struct {
 // NewDecoder creates a new decoder that reads data from r.
 func NewDecoder(r io.Reader) Decoder { return Decoder{bufio.NewReader(r)} }
 
-// A Field represents a field read from a wire-format message.
+// A Field represents a field read from a wire-format message.  The data in the
+// field are returned as encoded. Further decoding into a higher-level schema
+// is the caller's responsibility.
 type Field struct {
 	ID   int
 	Wire Type
