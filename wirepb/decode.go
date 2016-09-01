@@ -18,15 +18,6 @@ type Decoder struct {
 // NewDecoder creates a new decoder that reads data from r.
 func NewDecoder(r io.Reader) Decoder { return Decoder{bufio.NewReader(r)} }
 
-// A Field represents a field read from a wire-format message.  The data in the
-// field are returned as encoded. Further decoding into a higher-level schema
-// is the caller's responsibility.
-type Field struct {
-	ID   int
-	Wire Type
-	Data []byte
-}
-
 // Next returns the next field in the message.
 func (d Decoder) Next() (*Field, error) {
 	v, err := binary.ReadUvarint(d.buf)
@@ -88,3 +79,32 @@ const (
 
 	lastType = TFixed32
 )
+
+// A Field represents a field read from a wire-format message.  The data in the
+// field are returned as encoded. Further decoding into a higher-level schema
+// is the caller's responsibility.
+type Field struct {
+	ID   int
+	Wire Type
+	Data []byte
+}
+
+// Size reports the number of bytes needed to encode f in wire format, or 0 if
+// f cannot be encoded.
+func (f *Field) Size() int {
+	switch f.Wire {
+	case TVarint:
+		return (8*len(f.Data) + 6) / 7
+	case TFixed64:
+		return 8
+	case TDelimited:
+		vlen := 1
+		for n := uint(len(f.Data)) >> 7; n != 0; vlen++ {
+		}
+		return vlen + len(f.Data)
+	case TFixed32:
+		return 4
+	default:
+		return 0
+	}
+}
