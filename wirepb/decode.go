@@ -51,28 +51,26 @@ func (d Decoder) Next() (*Field, error) {
 			i++
 		}
 		f.Data = buf[:i]
+		return f, nil
 
 	case TFixed64:
 		f.Data = make([]byte, 8)
-		if _, err := io.ReadFull(d.buf, f.Data); err != nil {
-			return nil, err
-		}
 
 	case TDelimited:
 		w, err := binary.ReadUvarint(d.buf)
-		if err == nil {
-			f.Data = make([]byte, w)
-			_, err = io.ReadFull(d.buf, f.Data)
+		if err != nil {
+			return nil, err
 		}
+		f.Data = make([]byte, w)
 
 	case TFixed32:
 		f.Data = make([]byte, 4)
-		if _, err := io.ReadFull(d.buf, f.Data); err != nil {
-			return nil, err
-		}
 
 	default:
 		return nil, fmt.Errorf("unknown wire type %d", f.Wire)
+	}
+	if _, err := io.ReadFull(d.buf, f.Data); err != nil {
+		return nil, err
 	}
 	return f, nil
 }
