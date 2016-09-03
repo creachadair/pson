@@ -35,7 +35,7 @@ func (d Decoder) Next() (*Field, error) {
 		if err != nil {
 			return nil, checkErr(err)
 		}
-		f.Data = Uint64(w)
+		f.Data = PutUint64(w)
 		return f, nil
 
 	case TFixed64:
@@ -163,9 +163,9 @@ func varintSize(v uint64) int {
 	return n
 }
 
-// Uint64 packs v into a slice of bytes in big-endian order, without any
+// PutUint64 packs v into a slice of bytes in big-endian order, without any
 // unnecessary leading zeroes.
-func Uint64(v uint64) []byte {
+func PutUint64(v uint64) []byte {
 	var buf [8]byte
 	binary.BigEndian.PutUint64(buf[:], v)
 	for i, b := range buf {
@@ -176,13 +176,18 @@ func Uint64(v uint64) []byte {
 	return buf[:1]
 }
 
-func dataToVarint(data []byte) []byte {
+// Uint64 unpacks data into a uint64 in big-endian order.
+func Uint64(data []byte) uint64 {
 	var w uint64
 	for _, b := range data {
 		w = (w << 8) | uint64(b)
 	}
+	return w
+}
+
+func dataToVarint(data []byte) []byte {
 	var bits [10]byte
-	n := binary.PutUvarint(bits[:], w)
+	n := binary.PutUvarint(bits[:], Uint64(data))
 	return bits[:n]
 }
 
