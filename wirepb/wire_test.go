@@ -1,6 +1,7 @@
 package wirepb
 
 import (
+	"io"
 	"strings"
 	"testing"
 
@@ -71,5 +72,33 @@ func TestPacking(t *testing.T) {
 		if diff := pretty.Compare(rt, input); diff != "" {
 			t.Errorf("Pack result did not round-trip (-got, +want)\n%s", diff)
 		}
+	}
+}
+
+func TestErrors(t *testing.T) {
+	badInputs := []string{
+		"\010",       // missing varint length
+		"\050\x83",   // malformed varint length
+		"\023",       // unsupported wire type
+		"\034",       // unsupported wire type
+		"\046",       // unknown wire type
+		"\052\x0312", // truncated delimited field
+		"\061abcdef", // truncated fixed64
+		"\075abc",    // truncated fixed32
+	}
+nextTest:
+	for _, input := range badInputs {
+		dec := NewDecoder(strings.NewReader(input))
+		for {
+			f, err := dec.Next()
+			if err == io.EOF {
+				break
+			} else if err != nil {
+				t.Logf("Input %q: got expected error: %v", input, err)
+				continue nextTest
+			}
+			t.Logf("Field id=%d, wireType=%d, data=%+v", f.ID, f.Wire, f.Data)
+		}
+		t.Errorf("Input %q: expected error, but succeeded", input)
 	}
 }
