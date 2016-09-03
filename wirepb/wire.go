@@ -33,7 +33,7 @@ func (d Decoder) Next() (*Field, error) {
 	case TVarint:
 		w, err := binary.ReadUvarint(d.buf)
 		if err != nil {
-			return nil, err
+			return nil, checkErr(err)
 		}
 		f.Data = Uint64(w)
 		return f, nil
@@ -44,7 +44,7 @@ func (d Decoder) Next() (*Field, error) {
 	case TDelimited:
 		w, err := binary.ReadUvarint(d.buf)
 		if err != nil {
-			return nil, err
+			return nil, checkErr(err)
 		}
 		f.Data = make([]byte, w)
 
@@ -184,4 +184,11 @@ func dataToVarint(data []byte) []byte {
 	var bits [10]byte
 	n := binary.PutUvarint(bits[:], w)
 	return bits[:n]
+}
+
+func checkErr(err error) error {
+	if err == io.EOF {
+		return io.ErrUnexpectedEOF
+	}
+	return err
 }
