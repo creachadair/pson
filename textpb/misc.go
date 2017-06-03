@@ -48,13 +48,13 @@ func (m Message) Combine() Message {
 	return out
 }
 
-// Split recursively partitions m into multiple messages with the property that each field
-// of each resulting message has at most one value.
-func (m Message) Split() []Message { return m.Combine().split(true) }
+// RSplit recursively partitions m into multiple messages with the property
+// that each field of each resulting message has at most one value.
+func (m Message) RSplit() []Message { return m.Combine().split(true) }
 
-// Split1 partitions m into multiple messages with the property that each field
+// Split partitions m into multiple messages with the property that each field
 // of each resulting message has at most one value.
-func (m Message) Split1() []Message { return m.Combine().split(false) }
+func (m Message) Split() []Message { return m.Combine().split(false) }
 
 func (m Message) split(recur bool) []Message {
 	var all [][]*Field // the results of partitioning all the fields

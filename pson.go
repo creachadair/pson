@@ -70,9 +70,9 @@ func main() {
 			write = writeProtos
 		}
 		if *doRecur {
-			err = write(os.Stdout, msg.Split()...)
+			err = write(os.Stdout, msg.RSplit()...)
 		} else if *doSplit {
-			err = write(os.Stdout, msg.Split1()...)
+			err = write(os.Stdout, msg.Split()...)
 		} else {
 			err = write(os.Stdout, msg.Combine())
 		}
