@@ -1,3 +1,5 @@
+// Copyright (C) 2015 Michael J. Fromberger. All Rights Reserved.
+
 package textpb
 
 // This file adds split/combine and other utility code.

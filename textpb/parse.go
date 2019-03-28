@@ -1,3 +1,5 @@
+// Copyright (C) 2015 Michael J. Fromberger. All Rights Reserved.
+
 // Package textpb implements a scanner and parser for text-format protobuf
 // messages.
 package textpb

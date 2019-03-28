@@ -1,3 +1,5 @@
+// Copyright (C) 2015 Michael J. Fromberger. All Rights Reserved.
+
 // Package wirepb supports decoding raw wire-format protobuf messages, where
 // "raw" means the decoding is done without knowledge of the schema.
 package wirepb

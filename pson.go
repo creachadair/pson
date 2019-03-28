@@ -1,3 +1,5 @@
+// Copyright (C) 2015 Michael J. Fromberger. All Rights Reserved.
+
 // Program pson reads a text-format protobuf message from stdin or the named
 // file, and converts it to a JSON message on stdout.
 package main

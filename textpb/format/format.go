@@ -1,3 +1,5 @@
+// Copyright (C) 2015 Michael J. Fromberger. All Rights Reserved.
+
 // Package format renders textpb.Message values to protobuf text format.
 package format
 
