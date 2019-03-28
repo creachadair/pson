@@ -6,8 +6,8 @@ package textpb
 
 import "sort"
 
-// Camel recursively renames each field of m in-place, converting "snake_case"
-// names to "camelCase".
+// ToCamel recursively renames each field of m in-place, converting names in
+// "snake_case" names to "camelCase".
 func (m Message) ToCamel() {
 	for _, f := range m {
 		f.toCamel()

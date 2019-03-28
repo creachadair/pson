@@ -65,6 +65,7 @@ func (d Decoder) Next() (*Field, error) {
 // A wireType represents the wire type of a field key
 type wireType int
 
+// Constants defining the wire types understood for protobuf encoding.
 const (
 	TVarint     wireType = 0 // varint-encoded value
 	TFixed64    wireType = 1 // fixed-width 64-bit value (LSB first)

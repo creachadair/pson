@@ -11,8 +11,10 @@ import (
 	"strings"
 )
 
+// A Token represents the lexical type of tokens returned by the scanner.
 type Token int
 
+// Constants defining the types of tokens returned by the scanner.
 const (
 	None     Token = iota
 	Name           // field name or enumerator
@@ -138,9 +140,8 @@ func (s *Scanner) Next() bool {
 	// Check for self-delimiting tokens.
 	if t, ok := selfToken[c]; ok {
 		return s.ok(t)
-	} else {
-		return s.nameLike(c)
 	}
+	return s.nameLike(c)
 }
 
 // nameLike scans names, numbers, and Boolean constants.

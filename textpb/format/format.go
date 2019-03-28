@@ -21,12 +21,14 @@ var (
 	end   = map[bool]string{false: "\n", true: ""}
 )
 
+// A Config captures settings for rendering messages in text format.
 type Config struct {
 	Compact bool   // If true, omit vertical whitespace.
 	Curly   bool   // If true, use {} for grouping rather than <>.
 	Indent  string // Use this string for each level of indentation.
 }
 
+// Text renders the specified message to w in text format.
 func (c Config) Text(w io.Writer, msg textpb.Message) error { return c.textMessage(w, msg, 0) }
 
 func (c Config) textMessage(w io.Writer, msg textpb.Message, level int) error {
