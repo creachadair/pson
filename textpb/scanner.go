@@ -78,8 +78,8 @@ var isFixed = regexp.MustCompile(`(?i)^-?0x[a-f0-9]+$`)
 var isFloat = regexp.MustCompile(`(?i)^-?(\d+(\.\d*)?|\.\d+)(e[-+]?\d+)?f?$`)
 var isName = regexp.MustCompile(`(?i)^[_a-z][_a-z0-9]*$`)
 
-func isSpace(c rune) bool { return strings.IndexRune(whiteSpace, c) >= 0 }
-func isDelim(c rune) bool { return strings.IndexRune(nameDelim, c) >= 0 }
+func isSpace(c rune) bool { return strings.ContainsRune(whiteSpace, c) }
+func isDelim(c rune) bool { return strings.ContainsRune(nameDelim, c) }
 
 // NewScanner returns a scanner that consumes data from r.
 func NewScanner(r io.Reader) *Scanner { return &Scanner{r: bufio.NewReader(r)} }
