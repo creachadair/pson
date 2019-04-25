@@ -4,6 +4,8 @@ package textpb
 
 import "fmt"
 
+// ToValue converts m into a map[string]interface{} value with one entry for
+// each key. The concrete value for each field depends on its structure.
 func (m Message) ToValue() (interface{}, error) {
 	out := make(map[string]interface{})
 	for _, f := range m {
@@ -28,6 +30,8 @@ func (m Message) ToValue() (interface{}, error) {
 	return out, nil
 }
 
+// ToValue converts v into an interface{} value, which is either a map (if v is
+// a Message), a primitive value, or a slice of arbitrary values for an array.
 func (v *Value) ToValue() (interface{}, error) {
 	if v.Msg != nil {
 		return v.Msg.ToValue()
