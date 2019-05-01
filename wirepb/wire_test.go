@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kylelemons/godebug/pretty"
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestDecoding(t *testing.T) {
@@ -32,8 +32,8 @@ func TestDecoding(t *testing.T) {
 			t.Fatalf("dec.Next(): unexpected error: %v", err)
 		}
 		want := &Field{test.key, test.wire, []byte(test.data)}
-		if diff := pretty.Compare(got, want); diff != "" {
-			t.Errorf("Record %d result differs from expected (-got, +want)\n%s", i, diff)
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("Record %d result differs from expected (-want, +got)\n%s", i, diff)
 		}
 	}
 }
@@ -71,8 +71,8 @@ func TestPacking(t *testing.T) {
 		}
 
 		rt := decode1(got)
-		if diff := pretty.Compare(rt, input); diff != "" {
-			t.Errorf("Pack result did not round-trip (-got, +want)\n%s", diff)
+		if diff := cmp.Diff(input, rt); diff != "" {
+			t.Errorf("Pack result did not round-trip (-want, +got)\n%s", diff)
 		}
 	}
 }
