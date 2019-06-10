@@ -8,7 +8,7 @@ import (
 	"io"
 	"strings"
 
-	"bitbucket.org/creachadair/pson/textpb"
+	"github.com/creachadair/pson/textpb"
 )
 
 var (

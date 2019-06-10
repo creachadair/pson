@@ -12,8 +12,8 @@ import (
 	"log"
 	"os"
 
-	"bitbucket.org/creachadair/pson/textpb"
-	"bitbucket.org/creachadair/pson/textpb/format"
+	"github.com/creachadair/pson/textpb"
+	"github.com/creachadair/pson/textpb/format"
 )
 
 var (

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"bitbucket.org/creachadair/pson/textpb"
+	"github.com/creachadair/pson/textpb"
 )
 
 var configs = []Config{
