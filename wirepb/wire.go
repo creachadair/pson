@@ -9,6 +9,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"math"
 )
 
 // A Decoder consumes input from an io.Reader pointing to a wire-format
@@ -179,6 +180,13 @@ func PutUint64(v uint64) []byte {
 	return buf[:1]
 }
 
+// PutInt64 packs v into a slice of bytes in big-endian order, using the
+// zig-zag encoding (sign encoded in the least-significant bit).
+func PutInt64(z int64) []byte {
+	u := uint64(z<<1) ^ uint64(z>>63)
+	return PutUint64(u)
+}
+
 // Uint64 unpacks data into a uint64 in big-endian order.
 func Uint64(data []byte) uint64 {
 	var w uint64
@@ -186,6 +194,13 @@ func Uint64(data []byte) uint64 {
 		w = (w << 8) | uint64(b)
 	}
 	return w
+}
+
+// Int64 unpacks zig-zag encoded data into an int64.
+func Int64(data []byte) int64 {
+	z := Uint64(data)
+	mask := math.MaxUint64 + (1 - z&1)
+	return int64(mask ^ z>>1)
 }
 
 func dataToVarint(data []byte) []byte {
