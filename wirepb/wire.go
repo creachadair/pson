@@ -29,7 +29,7 @@ func (d Decoder) Next() (*Field, error) {
 	}
 	f := &Field{
 		ID:   int(v >> 3),
-		Wire: wireType(v & 7),
+		Wire: WireType(v & 7),
 	}
 
 	switch f.Wire {
@@ -63,17 +63,17 @@ func (d Decoder) Next() (*Field, error) {
 	return f, nil
 }
 
-// A wireType represents the wire type of a field key
-type wireType int
+// A WireType represents the wire type of a field key
+type WireType int
 
 // Constants defining the wire types understood for protobuf encoding.
 const (
-	TVarint     wireType = 0 // varint-encoded value
-	TFixed64    wireType = 1 // fixed-width 64-bit value (LSB first)
-	TDelimited  wireType = 2 // length-prefixed value (varint + bytes)
-	TStartGroup wireType = 3 // deprecated, unused
-	TEndGroup   wireType = 4 // deprecated, unused
-	TFixed32    wireType = 5 // fixed-width 32-bit value (LSB first)
+	TVarint     WireType = 0 // varint-encoded value
+	TFixed64    WireType = 1 // fixed-width 64-bit value (LSB first)
+	TDelimited  WireType = 2 // length-prefixed value (varint + bytes)
+	TStartGroup WireType = 3 // deprecated, unused
+	TEndGroup   WireType = 4 // deprecated, unused
+	TFixed32    WireType = 5 // fixed-width 32-bit value (LSB first)
 )
 
 // A Field represents a field read from a wire-format message.  The data in the
@@ -81,7 +81,7 @@ const (
 // is the caller's responsibility.
 type Field struct {
 	ID   int
-	Wire wireType
+	Wire WireType
 	Data []byte
 }
 

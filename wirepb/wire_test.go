@@ -1,12 +1,13 @@
 // Copyright (C) 2015 Michael J. Fromberger. All Rights Reserved.
 
-package wirepb
+package wirepb_test
 
 import (
 	"io"
 	"strings"
 	"testing"
 
+	"github.com/creachadair/pson/wirepb"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -16,32 +17,33 @@ func TestDecoding(t *testing.T) {
 
 	want := []struct {
 		key  int
-		wire wireType
+		wire wirepb.WireType
 		data string
 	}{
-		{1, TDelimited, "abcdefgh"},
-		{2, TFixed64, "abcdefgh"},
-		{3, TVarint, "ABCD"},
-		{4, TFixed32, "****"},
+		{1, wirepb.TDelimited, "abcdefgh"},
+		{2, wirepb.TFixed64, "abcdefgh"},
+		{3, wirepb.TVarint, "ABCD"},
+		{4, wirepb.TFixed32, "****"},
 	}
-	dec := NewDecoder(strings.NewReader(input))
+	dec := wirepb.NewDecoder(strings.NewReader(input))
 	for i, test := range want {
 		t.Logf("Record %d :: %+v", i, test)
 		got, err := dec.Next()
 		if err != nil {
 			t.Fatalf("dec.Next(): unexpected error: %v", err)
 		}
-		want := &Field{test.key, test.wire, []byte(test.data)}
+		want := &wirepb.Field{test.key, test.wire, []byte(test.data)}
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("Record %d result differs from expected (-want, +got)\n%s", i, diff)
 		}
 	}
 }
 
-func decode1(s string) *Field {
-	f, err := NewDecoder(strings.NewReader(s)).Next()
+func decode1(t *testing.T, s string) *wirepb.Field {
+	t.Helper()
+	f, err := wirepb.NewDecoder(strings.NewReader(s)).Next()
 	if err != nil {
-		panic(err)
+		t.Fatalf("Decode %q failed: %v", s, err)
 	}
 	return f
 }
@@ -49,17 +51,17 @@ func decode1(s string) *Field {
 func TestPacking(t *testing.T) {
 	tests := []struct {
 		id         int
-		wire       wireType
+		wire       wirepb.WireType
 		data, want string
 	}{
-		{1, TFixed32, "abcd", "\015abcd"},
-		{2, TFixed64, "abcdefgh", "\021abcdefgh"},
-		{3, TDelimited, "apple pie and cake", "\032\022apple pie and cake"},
-		{4, TVarint, "ABCD", " \xc4\x86\x89\x8a\x04"},
-		{47, TFixed32, "0123", "\xfd\x020123"},
+		{1, wirepb.TFixed32, "abcd", "\015abcd"},
+		{2, wirepb.TFixed64, "abcdefgh", "\021abcdefgh"},
+		{3, wirepb.TDelimited, "apple pie and cake", "\032\022apple pie and cake"},
+		{4, wirepb.TVarint, "ABCD", " \xc4\x86\x89\x8a\x04"},
+		{47, wirepb.TFixed32, "0123", "\xfd\x020123"},
 	}
 	for _, test := range tests {
-		input := &Field{ID: test.id, Wire: test.wire, Data: []byte(test.data)}
+		input := &wirepb.Field{ID: test.id, Wire: test.wire, Data: []byte(test.data)}
 		got := string(input.Pack(nil))
 		n := input.Size()
 
@@ -70,7 +72,7 @@ func TestPacking(t *testing.T) {
 			t.Errorf("Pack %+v: got %#v, want %#v", input, []byte(got), []byte(test.want))
 		}
 
-		rt := decode1(got)
+		rt := decode1(t, got)
 		if diff := cmp.Diff(input, rt); diff != "" {
 			t.Errorf("Pack result did not round-trip (-want, +got)\n%s", diff)
 		}
@@ -90,7 +92,7 @@ func TestErrors(t *testing.T) {
 	}
 nextTest:
 	for _, input := range badInputs {
-		dec := NewDecoder(strings.NewReader(input))
+		dec := wirepb.NewDecoder(strings.NewReader(input))
 		for {
 			f, err := dec.Next()
 			if err == io.EOF {
