@@ -99,6 +99,7 @@ func SnakeToCamel(name string) string {
 		case len(words) == 0:
 			words = append(words, strings.ToLower(word))
 		default:
+			//lint:ignore SA1019 This is fine for our purposes.
 			words = append(words, strings.Title(strings.ToLower(word)))
 		}
 	}
