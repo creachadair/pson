@@ -146,10 +146,7 @@ func (f *Field) PackValue(buf []byte) []byte {
 // appendN appends up to n bytes from data to old, padding with zeroes if
 // len(data) < n, and returns the expanded slice.
 func appendN(old, data []byte, n int) []byte {
-	t := len(data)
-	if t > n {
-		t = n
-	}
+	t := min(len(data), n)
 	old = append(old, data[:t]...)
 	for t < n {
 		old = append(old, 0)
