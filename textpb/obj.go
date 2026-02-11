@@ -6,8 +6,8 @@ import "fmt"
 
 // ToValue converts m into a map[string]interface{} value with one entry for
 // each key. The concrete value for each field depends on its structure.
-func (m Message) ToValue() (interface{}, error) {
-	out := make(map[string]interface{})
+func (m Message) ToValue() (any, error) {
+	out := make(map[string]any)
 	for _, f := range m {
 		if len(f.Values) == 1 {
 			v, err := f.Values[0].ToValue()
@@ -17,7 +17,7 @@ func (m Message) ToValue() (interface{}, error) {
 			out[f.Name] = v
 			continue
 		}
-		var vals []interface{}
+		var vals []any
 		for _, v := range f.Values {
 			w, err := v.ToValue()
 			if err != nil {
@@ -32,7 +32,7 @@ func (m Message) ToValue() (interface{}, error) {
 
 // ToValue converts v into an interface{} value, which is either a map (if v is
 // a Message), a primitive value, or a slice of arbitrary values for an array.
-func (v *Value) ToValue() (interface{}, error) {
+func (v *Value) ToValue() (any, error) {
 	if v.Msg != nil {
 		return v.Msg.ToValue()
 	}

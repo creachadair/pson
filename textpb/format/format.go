@@ -103,7 +103,7 @@ func (c Config) next(w io.Writer, want bool) error {
 	return nil
 }
 
-func fp(w io.Writer, args ...interface{}) error {
+func fp(w io.Writer, args ...any) error {
 	_, err := fmt.Fprint(w, args...)
 	return err
 }

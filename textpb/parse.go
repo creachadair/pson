@@ -84,7 +84,7 @@ type parser struct {
 	*Scanner
 }
 
-func (p parser) fail(msg string, args ...interface{}) error {
+func (p parser) fail(msg string, args ...any) error {
 	return fmt.Errorf(fmt.Sprintf("line %d: ", p.Line())+msg, args...)
 }
 
